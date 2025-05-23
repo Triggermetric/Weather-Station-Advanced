@@ -7,13 +7,13 @@
 #include <WifiUdp.h>
 
 // Network and Firebase credentials
-#define WIFI_SSID "P 919"
-#define WIFI_PASSWORD "123456aA@Aa"
+#define WIFI_SSID "SSID"
+#define WIFI_PASSWORD "WIFIPASSWORD"
 
-#define Web_API_KEY "AIzaSyDZwUeNkjNGUpvsyz2S3PjqojQG0LozMo8"
-#define DATABASE_URL "https://weatherstation-8d3d8-default-rtdb.asia-southeast1.firebasedatabase.app/"
-#define USER_EMAIL "lamponhq123@gmail.com"
-#define USER_PASS "123456"
+#define Web_API_KEY "XXXX" // YOUR FIREBASE WEB API KEY
+#define DATABASE_URL "XXXX" // DATABASE URL
+#define USER_EMAIL "XXXX" // USER THAT HAVE PERMISSION TO VIEW THE DATA
+#define USER_PASS "XXXX" // USER PASSWORD
 
 // User function
 void processData(AsyncResult &aResult);
@@ -31,14 +31,12 @@ RealtimeDatabase Database;
 String values = "0.1";
 String sensor_data;
 
-// Timer variables for sending data every 10 seconds
 unsigned long lastSendTime = 0;
-const unsigned long sendInterval = 30 * 1000ul; // 10 seconds in milliseconds
+const unsigned long sendInterval = 30 * 1000ul;
 
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org");
 
-// Variables to send to the Database
 int intValue = 0;
 float floatValue = 0.01;
 String stringValue = "";
@@ -46,7 +44,6 @@ String stringValue = "";
 void setup(){
   Serial.begin(9600);
 
-  // Connect to Wi-Fi
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connecting to Wi-Fi");
   while (WiFi.status() != WL_CONNECTED)    {
@@ -55,32 +52,28 @@ void setup(){
   }
   Serial.println();
 
-  // Configure SSL client
   ssl_client.setInsecure();
-  ssl_client.setTimeout(1000); // Set connection timeout
-  ssl_client.setBufferSizes(4096, 1024); // Set buffer sizes
+  ssl_client.setTimeout(1000); 
+  ssl_client.setBufferSizes(4096, 1024); 
 
   // Initialize Firebase
-  initializeApp(aClient, app, getAuth(user_auth), processData, "🔐 authTask");
+  initializeApp(aClient, app, getAuth(user_auth), processData, "Debug");
   app.getApp<RealtimeDatabase>(Database);
   Database.url(DATABASE_URL);
   timeClient.begin();
 }
 
 void loop(){
-  // Maintain authentication and async tasks
   app.loop();
 
   bool Sr=false;
  
   while(Serial.available())
   {
-    //get sensor data from serial put in sensor_data
     sensor_data=Serial.readString(); 
     Sr=true;    
   }
 
-  // Check if authentication is ready
   if (app.ready() && Sr){
     values = sensor_data;
 
@@ -97,18 +90,14 @@ void loop(){
     unsigned long epochTime = getTime();
 
     if (currentTime - lastSendTime >= sendInterval){
-      // Update the last send time
       lastSendTime = currentTime;
       String dir = "/" + String(epochTime) + "/";
 
-      // send a string
       stringValue = "value_" + String(currentTime);
 
-      // send an int
       Database.set<float>(aClient, dir + "temp", temp.toFloat(), processData, "RTDB_Send_Float");
       Database.set<float>(aClient, dir + "humid", humid.toFloat(), processData, "RTDB_Send_Float");
       Database.set<float>(aClient, dir + "pressure", pressure.toFloat(), processData, "RTDB_Send_Float");
-
       Database.set<int>(aClient, dir + "pred", intPredCast.toInt(), processData, "RTDB_Send_Int");
       Database.set<int>(aClient, dir + "timestamp", epochTime, processData, "RTDB_Send_Int");
     }
