@@ -11,15 +11,11 @@
 
 #define seaLevelPressure_hPa 1013.25
 
-// String HOST = "api.thingspeak.com";
 String PORT = "80";
-String AP = "P 919";
-String PASS = "123456aA@Aa";
+String AP = "YOURAP";
+String PASS = "WIFIPASSWORD";
 
 int successOrder = 0;
-
-// String API = "SO327RN27QVDCP4N";
-// String field = "field1";
 
 Adafruit_BMP085 bmp;
 SoftwareSerial esp(7, 6);
@@ -46,10 +42,6 @@ void setup() {
   lcd.setCursor(0, 0);
   lcd.print("WEATHER STATION");
 
-  // sendCommand("AT", "OK", 5);
-  // sendCommand("AT+CWMODE=1", "OK", 5);
-  // sendCommand("AT+CWJAP=\""+AP+"\",\""+PASS+"\"", "OK", 15);
-
   successOrder = 0;
 
   while (!Serial) {
@@ -63,9 +55,6 @@ void loop() {
   float temp = am2320.readTemperature();
   float humid = am2320.readHumidity();
   float pressure = bmp.readPressure();
-  // float temp = 500;
-  // float humid = 123;
-  // float pressure = 321;
 
   static uint32_t tmr;
   static uint32_t data_millis;
@@ -126,103 +115,7 @@ void loop() {
   }
 
   delay(2000);
-
-//   delay(cur);
-//   // removed any buffered previous serial data.
-//   esp.flush();
-//   delay(1000);
-//   // sent sensors data to serial (sent sensors data to ESP8266)
-//   Serial.println(values);
-//   esp.print(values);
-//   delay(2000);
 }
-
-// boolean SendCommand(String cmd, String ack){
-//   mySerial.println(cmd); // Send "AT+" command to module
-//   if (!echoFind(ack)) // timed out waiting for ack string
-//     return true; // ack blank or ack found
-// }
-
-// boolean sendDataESP(float temp, float humid, float pressure)
-// {
-//   String s_tmp = String(temp);
-//   String s_hum = String(humid);
-//   String s_prs = String(pressure);
-//   int id = round(cond.getCast());
-//   String id_cast = String(id);
-
-//   // String getData = "GET /update?api_key="+ API;
-
-//   // String byteLen = String(
-//   //   36 + 8 * 4
-//   //   + s_tmp.length() + s_hum.length() + s_prs.length() + id_cast.length()
-//   //   + 4
-//   //   );
-
-//   //sendCommand("AT+CIFSR", "OK", 5);
-//   boolean success = false;
-//   //GET /v2/ipgeo?apiKey=0c06cb995e0c40dd82dfc630c3c6365c&ip=116.98.1.53&fields=location.latitude&fields=location.longitude
-//   switch (successOrder) {
-//     case 0: success = sendCommand("AT", "OK", 5);break;
-//     case 1: success = sendCommand("AT+RST", "OK", 10);break;
-//     case 2: success = sendCommand("AT+CIPMUX=1", "OK", 5); break;
-//     case 3: success = sendCommand("AT+CIPSTART=0,\"TCP\",\""+ HOST +"\","+ PORT, "OK", 15); break;
-//     case 4: success = sendCommand("AT+CIPSEND=0," + byteLen, ">", 4); break;
-//     case 5: {
-//       String tosend = getData +"&"+ field +"=" + s_tmp +"&field2=" + s_hum +"&field3=" + s_prs += "&field4=" + id_cast;
-
-//       Serial.println(tosend);
-//       esp.println(tosend);
-//       delay(1500);
-//       esp.println();
-//       delay(1500);
-//       success = true;
-//       break;
-//     }//case 6: success = sendCommand("AT+CIPSEND=0," + byteLen, ">", 4); break;
-//     //case 5: esp.println(getData +"&field1=" + String(humid)); delay(1500); success = true; break;
-//     case 6: sendCommand("AT+CIPCLOSE=0", "OK", 5); success = true; break;
-//   }
-
-//     if (success) {
-//     if (successOrder++ == 6)
-//       {
-//         successOrder -= 7;
-//         return true;
-//       }
-//   } else {
-//     successOrder = 0;
-//   }
-
-//   delay(1000);
-//   return false;
-// }
-
-// boolean sendCommand(String command, char readReplay[], int maxInterval) {
-//   boolean found = false;
-//   int interval = 0;
-
-//   Serial.print(command);
-//   Serial.print(" ");
-
-//   while(interval < maxInterval) {
-//     esp.println(command);
-//     if(esp.find(readReplay))
-//     {
-//       found = true;
-//       break;
-//     }
-
-//     interval++;
-//   }
-  
-//   if(found) {
-//     Serial.println("SUCCESS");
-//     return true;
-//   }
-
-//   Serial.println("FAIL");
-//   return false;
-// }
 
 void clearLCDLine(int line) {
   for(int n = 0; n < 16; n++)
